@@ -200,7 +200,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	req.Header["Upgrade"] = []string{"websocket"}
 	req.Header["Connection"] = []string{"Upgrade"}
 	req.Header["Sec-WebSocket-Key"] = []string{challengeKey}
-	req.Header["Sec-WebSocket-Version"] = []string{"13"}
+	req.Header["Sec-WEBSocket-Version"] = []string{"13"}
 	if len(d.Subprotocols) > 0 {
 		req.Header["Sec-WebSocket-Protocol"] = []string{strings.Join(d.Subprotocols, ", ")}
 	}
