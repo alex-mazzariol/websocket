@@ -11,6 +11,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/http/httptrace"
@@ -161,9 +162,9 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		return nil, nil, err
 	}
 
-	uRequest := url.URL{
-		RawPath: u.RawPath,
-	}
+	uRequest, _ := url.Parse(urlStr)
+	uRequest.Opaque = uRequest.RawPath
+	log.Println("Raw path is " + uRequest.RawPath + " requestURI is " + uRequest.RequestURI())
 
 	switch u.Scheme {
 	case "ws":
@@ -181,7 +182,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 
 	req := &http.Request{
 		Method:     "GET",
-		URL:        &uRequest,
+		URL:        uRequest,
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
 		ProtoMinor: 1,
