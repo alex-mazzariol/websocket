@@ -11,7 +11,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/http/httptrace"
@@ -162,10 +161,6 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		return nil, nil, err
 	}
 
-	uRequest, _ := url.Parse(urlStr)
-	uRequest.Opaque = uRequest.RawPath
-	log.Println("Raw path is " + uRequest.RawPath + " requestURI is " + uRequest.RequestURI())
-
 	switch u.Scheme {
 	case "ws":
 		u.Scheme = "http"
@@ -182,7 +177,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 
 	req := &http.Request{
 		Method:     "GET",
-		URL:        uRequest,
+		URL:        u,
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
 		ProtoMinor: 1,
@@ -205,7 +200,7 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	req.Header["Upgrade"] = []string{"websocket"}
 	req.Header["Connection"] = []string{"Upgrade"}
 	req.Header["Sec-WebSocket-Key"] = []string{challengeKey}
-	//req.Header["Sec-WebSocket-Version"] = []string{"13"}
+	req.Header["Sec-WEBSocket-Version"] = []string{"13"}
 	if len(d.Subprotocols) > 0 {
 		req.Header["Sec-WebSocket-Protocol"] = []string{strings.Join(d.Subprotocols, ", ")}
 	}
@@ -330,8 +325,6 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	}
 
 	conn := newConn(netConn, false, d.ReadBufferSize, d.WriteBufferSize, d.WriteBufferPool, nil, nil)
-
-	req.Write(log.Writer())
 
 	if err := req.Write(netConn); err != nil {
 		return nil, nil, err
